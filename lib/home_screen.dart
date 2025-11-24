@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +23,10 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Order summary", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  "Order summary",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
@@ -34,16 +38,29 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset('assets/keto.png', width: 50, height: 50),
+                        child: Image.asset(
+                          'assets/keto.png',
+                          width: 50,
+                          height: 50,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
-                            Text("Weight loss meal plan", style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("Keto by Foxxy", style: TextStyle(color: Colors.grey)),
-                            Text("Breakfast + Lunch + Dinner + 2 Snacks", style: TextStyle(fontSize: 12)),
+                            Text(
+                              "Weight loss meal plan",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "Keto by Foxxy",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text(
+                              "Breakfast + Lunch + Dinner + 2 Snacks",
+                              style: TextStyle(fontSize: 12),
+                            ),
                           ],
                         ),
                       ),
@@ -77,13 +94,15 @@ class HomeScreen extends StatelessWidget {
 }
 
 class PlatformView extends StatelessWidget {
+  const PlatformView({super.key});
+
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
         viewType: 'flow_view',
         creationParams: {
-       'paymentSessionID': "ps_2vGtePZHetNPx7xSfyLdU2CShnH",
+          'paymentSessionID': "ps_2vGtePZHetNPx7xSfyLdU2CShnH",
           'paymentSessionSecret': "pss_91cc989d-8e1d-43dd-886c-9ecff67cc6c2",
           'publicKey': "pk_sbox_cwlkrqiyfrfceqz2ggxodhda2yh",
         },

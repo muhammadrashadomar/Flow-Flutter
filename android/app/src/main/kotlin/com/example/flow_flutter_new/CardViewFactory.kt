@@ -1,20 +1,26 @@
 package com.example.flow_flutter_new.views
 
+import android.app.Activity
 import android.content.Context
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import com.example.flow_flutter_new.CardPlatformView
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
-import com.example.flow_flutter_new.CardPlatformView
-import android.app.Activity
-import io.flutter.plugin.common.StandardMessageCodec
 
+/**
+ * Factory for creating CardPlatformView instances Provides callback to capture view instance for
+ * method channel operations
+ */
 class CardViewFactory(
-    private val messenger: BinaryMessenger,
-    private val activity: Activity // 🔥 Add the real Activity
+        private val messenger: BinaryMessenger,
+        private val activity: Activity,
+        private val onViewCreated: ((CardPlatformView) -> Unit)? = null
 ) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        return CardPlatformView(activity, args, messenger)
+        val view = CardPlatformView(activity, args, messenger)
+        onViewCreated?.invoke(view)
+        return view
     }
 }
