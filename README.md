@@ -1,204 +1,319 @@
-# 🚀 Checkout.com Flutter Flow Integration using iOS and Android Native SDKs
+# Payment Integration - Refactored Architecture
 
-A Flutter application that demonstrates seamless integration with [Checkout.com's Flow SDK](https://www.checkout.com/docs/payments/accept-payments/accept-a-payment-on-your-mobile-app/get-started-with-flow-for-mobile) using **Platform Views** on both **Android** and **iOS**.
+[![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter)](https://flutter.dev)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.8+-7F52FF?logo=kotlin)](https://kotlinlang.org)
+[![Checkout.com](https://img.shields.io/badge/Checkout.com-SDK-00D632)](https://www.checkout.com)
 
-- 💳 Card payments
-- 🧾 Google Pay (Android)
-- 🍏 Apple Pay (iOS)
-- 🌊 Full Flow Component (Card + Apple Pay / Google Pay combined)
----
+A production-ready Flutter payment integration with clean architecture, featuring card tokenization and Google Pay support via Checkout.com SDK.
 
-## 📱 Screens
+## ✨ Features
 
-The app consists of two buttons:
+- 🎯 **Card Tokenization** - Tokenize cards directly from Flutter button
+- 💳 **Google Pay** - Native Google Pay sheet integration
+- 🎨 **Customizable UI** - Full control over appearance from Flutter
+- 🔧 **Dynamic Configuration** - No hardcoded values in native code
+- 🔒 **Secure** - Best practices for payment data handling
+- 🧪 **Production Ready** - Comprehensive error handling and logging
+- 📱 **Clean Architecture** - Clear separation of concerns
 
-- **Card Payment**: Loads the Card UI component.
-- **Google Pay / Apple Pay**: Loads the native wallet component (based on platform).
-- **Pay with Flow**: Loads the full Checkout Flow experience, including wallet and card options.
----
-
-## 🔧 Project Structure
+## 🏗️ Architecture Overview
 
 ```
-ios/ 
-└── Runner/ 
-  ├── AppDelegate.swift # Registers method channel and both native view factories 
-  ├── CheckoutPlatformView1.swift # Contains: 
-    │├── CheckoutCardPlatformView1 # Card UI with SwiftUI 
-    │├── CheckoutApplePayPlatformView1 # Apple Pay UI with SwiftUI 
-    │├── CheckoutCardViewFactory1 
-    │├── CheckoutApplePayViewFactory1 
-    │├── CheckoutFlowViewFactory1 
-    │├── CheckoutFlowPlatformView1
-    │└── DummyPlatformView1 # Displays fallback for unsupported iOS versions
-android/
-└── app/src/main/java/kotlin/com/example/flow_flutter_new/ 
-  ├── MainActivity.kt # Extends FlutterFragmentActivity, registers view factories 
-  ├── CardPlatformView.kt # Renders Checkout Card UI using Compose 
-  ├── CardViewFactory.kt # Factory for Card component 
-  ├── GooglePayPlatformView.kt # Renders Google Pay UI using Compose 
-  ├── GooglePayViewFactory.kt # Factory for Google Pay component 
-  ├── FlowPlatformView.kt # Renders Flow UI using Compose 
-  ├── FlowViewFactory.kt # Factory for Flow component 
+┌─────────────────────────────────────┐
+│         Flutter Layer (Dart)         │
+├─────────────────────────────────────┤
+│  • PaymentBridge (Service)           │
+│  • PaymentConfig (Models)            │
+│  • PaymentResult (Models)            │
+│  • UI Components                     │
+└────────────┬────────────────────────┘
+             │ Method Channel
+             │ (checkout_bridge)
+┌────────────┴────────────────────────┐
+│      Android Native Layer (Kotlin)   │
+├─────────────────────────────────────┤
+│  • MainActivity (Method Handler)     │
+│  • CardPlatformView (Card Input)     │
+│  • GooglePayPlatformView (GPay)      │
+│  • Checkout.com SDK Integration      │
+└─────────────────────────────────────┘
 ```
 
----
+**Key Principle**: Flutter controls everything, native provides input components only.
 
-## 📲 iOS Integration
+## 🚀 Quick Start
 
-### 🔹 Files
-- `AppDelegate.swift`: Registers platform views and method channel
-- `CheckoutPlatformView1.swift`: Contains Card, Apple Pay and Flow renderers using SwiftUI
+### 1. Add Dependencies
 
-### 🔹 Apple Pay Setup
-Make sure you:
-- Add your `merchantIdentifier` (e.g., `merchant.com.flowmobile.checkout`)
-- Enable **Apple Pay capability** in Xcode
-- Use iOS 13+ (for SwiftUI compatibility)
-
-> Note: Real devices are required to test Apple Pay.
-
-### 🔹 Permissions
-No additional `Info.plist` permissions required for Apple Pay.
-
----
-
-## 🤖 Android Integration
-
-### ✅ Gradle Configuration
-
-#### 🔹 Project-level `build.gradle.kts`
-```kotlin
-repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://maven.fpregistry.io/releases") }
-    }
-}
+```yaml
+# pubspec.yaml
+dependencies:
+  flutter:
+    sdk: flutter
 ```
 
-#### 🔹 App-level `build.gradle.kts`
-```kotlin
-plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("dev.flutter.flutter-gradle-plugin")
-}
-
-android {
-    compileSdk = 35
-    defaultConfig {
-        applicationId = "com.example.flow_flutter_new"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-    }
-    buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = "1.5.3" }
-    kotlinOptions { jvmTarget = JavaVersion.VERSION_11.toString() }
-}
-
-dependencies {
-    implementation("com.checkout:checkout-android-components:1.0.0-beta-1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel:2.9.0-alpha13")
-    implementation("androidx.savedstate:savedstate:1.2.1")
-    implementation("androidx.activity:activity-compose:1.10.1")
-    implementation(platform("androidx.compose:compose-bom:2025.03.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
-    implementation("com.google.android.gms:play-services-wallet:19.4.0")
-    implementation("com.google.android.gms:play-services-base:18.6.0")
-}
-```
-
-### 🔹 Manifest Permissions
-```xml
-<uses-permission android:name="android.permission.INTERNET"/>
-
-<application>
-    <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
-</application>
-```
-
-### 🔹 Requirements
-- Make sure you use `FlutterFragmentActivity` instead of `FlutterActivity` to support Google Pay lifecycle.
-- Test on **real device** for Google Pay.
-
----
-
-## 🧪 Flutter UI
-
-> In this demo we created a HomeScreen to display 3 buttons that initiate bottom sheets for Card, GooglePay/ApplePay and full Flow component.
+### 2. Initialize Payment Bridge
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'services/payment_bridge.dart';
+import 'models/payment_config.dart';
 
-void main() => runApp(MyApp());
+final paymentBridge = PaymentBridge();
+paymentBridge.initialize();
 
-class MyApp extends StatelessWidget {
-  static const platform = MethodChannel("checkout_bridge");
+// Set up callbacks
+paymentBridge.onCardTokenized = (result) {
+  print('Token: ${result.token}');
+};
+```
 
-  Future<void> _launchCheckout(String viewType) async {
-    await platform.invokeMethod("initializeCheckout", {
-      "paymentSessionID": "your-session-id",
-      "paymentSessionSecret": "your-secret",
-      "publicKey": "your-public-key"
-    });
+### 3. Configure Payment
+
+```dart
+final config = PaymentConfig(
+  paymentSessionId: "ps_xxx",
+  paymentSessionSecret: "pss_xxx",
+  publicKey: "pk_sbox_xxx",
+  environment: PaymentEnvironment.sandbox,
+);
+
+final cardConfig = CardConfig(
+  showCardholderName: false,
+);
+
+await paymentBridge.initCardView(config, cardConfig);
+```
+
+### 4. Display Card Input & Button
+
+```dart
+Column(
+  children: [
+    // Native card input
+    Expanded(
+      child: AndroidView(
+        viewType: 'flow_card_view',
+        creationParams: config.toMap(),
+        creationParamsCodec: const StandardMessageCodec(),
+      ),
+    ),
+    // Flutter button
+    ElevatedButton(
+      onPressed: () => paymentBridge.tokenizeCard(),
+      child: Text('Pay Now'),
+    ),
+  ],
+)
+```
+
+## 📱 Flutter API
+
+### PaymentBridge Methods
+
+| Method | Description |
+|--------|-------------|
+| `initialize()` | Initialize payment bridge |
+| `initCardView(config, cardConfig)` | Initialize card component |
+| `validateCard()` | Validate card input |
+| `tokenizeCard()` | Trigger tokenization |
+| `initGooglePay(config, googlePayConfig)` | Initialize Google Pay |
+| `checkGooglePayAvailability()` | Check if Google Pay is available |
+| `launchGooglePaySheet(requestData)` | Launch Google Pay sheet |
+| `dispose()` | Clean up resources |
+
+### Callbacks
+
+```dart
+paymentBridge.onCardTokenized = (CardTokenResult result) { };
+paymentBridge.onPaymentSuccess = (PaymentSuccessResult result) { };
+paymentBridge.onPaymentError = (PaymentErrorResult result) { };
+```
+
+## 🔧 Configuration
+
+### Payment Configuration
+
+```dart
+PaymentConfig(
+  paymentSessionId: "ps_xxx",      // From your backend
+  paymentSessionSecret: "pss_xxx",  // From your backend
+  publicKey: "pk_sbox_xxx",         // Checkout.com public key
+  environment: PaymentEnvironment.sandbox,
+  appearance: AppearanceConfig(
+    borderRadius: 8,
+    colorTokens: ColorTokens(
+      colorAction: 0XFF00639E,
+      colorPrimary: 0XFF111111,
+      colorBorder: 0XFFCCCCCC,
+    ),
+  ),
+)
+```
+
+## 🎨 Customization
+
+Fully customize the appearance from Flutter:
+
+```dart
+AppearanceConfig(
+  borderRadius: 12,
+  colorTokens: ColorTokens(
+    colorAction: 0XFF4CAF50,      // Primary action color
+    colorPrimary: 0XFF212121,     // Text color
+    colorBorder: 0XFFE0E0E0,      // Border color
+    colorFormBorder: 0XFF9E9E9E,  // Form field border
+  ),
+)
+```
+
+## 📚 Documentation
+
+- **[Architecture Guide](ARCHITECTURE.md)** - Detailed architecture documentation
+- **[Migration Guide](MIGRATION_GUIDE.md)** - Migrate from old architecture
+- **[Quick Reference](QUICK_REFERENCE.md)** - Code snippets and examples
+
+## 🔒 Security
+
+- ✅ No hardcoded credentials
+- ✅ Session secrets from backend only
+- ✅ Proper error handling
+- ✅ No sensitive data in logs (production)
+- ✅ Token data encrypted in transit
+
+## 🐛 Troubleshooting
+
+### Card view not showing
+
+```
+✓ Check session credentials are valid
+✓ Verify initCardView() was called
+✓ Check Android logs for errors
+```
+
+### Tokenization fails
+
+```
+✓ Ensure card input is valid
+✓ Verify component is initialized
+✓ Check callbacks are set
+```
+
+### Google Pay not available
+
+```
+✓ Check device supports Google Pay
+✓ Verify Google Play Services installed
+✓ Check merchant configuration
+```
+
+See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) for more.
+
+## 📝 Example
+
+Complete example in `lib/main.dart`:
+
+```dart
+class PaymentScreen extends StatefulWidget {
+  @override
+  State<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  final PaymentBridge _paymentBridge = PaymentBridge();
+  bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupPaymentBridge();
+  }
+
+  void _setupPaymentBridge() {
+    _paymentBridge.initialize();
+    
+    _paymentBridge.onCardTokenized = (result) {
+      setState(() => _isProcessing = false);
+      _showSuccess('Token: ${result.token}');
+    };
+    
+    _paymentBridge.onPaymentError = (result) {
+      setState(() => _isProcessing = false);
+      _showError(result.errorMessage);
+    };
+  }
+
+  Future<void> _tokenizeCard() async {
+    setState(() => _isProcessing = true);
+    await _paymentBridge.tokenizeCard();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Checkout.com Flow')),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () => _launchCheckout("flow_card_view"),
-              child: Text("Pay with Card"),
-            ),
-            ElevatedButton(
-              onPressed: () => _launchCheckout("flow_googlepay_view"),
-              child: Text("Pay with Google Pay / Apple Pay"),
-            ),
-            ElevatedButton(
-              onPressed: () => _launchCheckout("flow_flow_view"),
-              child: Text("Pay with Flow"),
-            ),
-          ],
-        ),
-      ),
-    );
+    // ... UI implementation
   }
 }
 ```
 
----
+## 🎯 Key Improvements Over Previous Architecture
 
-## 🧾 Final Notes
+| Aspect | Before | After |
+|--------|--------|-------|
+| Configuration | ❌ Hardcoded in Android | ✅ Dynamic from Flutter |
+| Button Control | ❌ Native button | ✅ Flutter button |
+| API | ❌ Scattered methods | ✅ Clean PaymentBridge |
+| Results | ❌ Raw callbacks | ✅ Typed models |
+| Errors | ❌ Inconsistent | ✅ Structured with codes |
+| Testing | ❌ Difficult | ✅ Easy to test |
+| Maintenance | ❌ Hard to modify | ✅ Easy to extend |
 
-- Make sure your **Apple Pay merchant ID** is valid and configured on Apple Developer Portal.
-- Use correct payment session values by calling the /payment-sessions API
-  - For Android: update payment session id, paymentSessionToken (in this demo it is added in card and googlepay platformView.kt) and paymentSessionSecret.
-  - For iOS: update only payment session id and paymentSessionSecret.
+## 🛠️ Tech Stack
 
----
+- **Flutter** - UI framework
+- **Kotlin** - Android native code
+- **Checkout.com SDK** - Payment processing
+- **Method Channels** - Platform communication
 
-## 🔥 Running the App
-```bash
-flutter pub get
-flutter run
+## 📦 Project Structure
+
 ```
+lib/
+├── models/
+│   ├── payment_config.dart      # Configuration models
+│   └── payment_result.dart      # Result models
+├── services/
+│   └── payment_bridge.dart      # Unified payment bridge
+└── main.dart                     # UI implementation
+
+android/app/src/main/kotlin/com/example/flow_flutter_new/
+├── MainActivity.kt               # Method channel handler
+├── CardPlatformView.kt          # Card input component
+├── GooglePayPlatformView.kt     # Google Pay component
+└── views/
+    ├── CardViewFactory.kt
+    └── GooglePayViewFactory.kt
+```
+
+## 🤝 Contributing
+
+This is a refactored production architecture. Key principles when extending:
+
+1. Keep Flutter in control
+2. Native provides components only
+3. All config from Flutter
+4. Structured error handling
+5. Comprehensive logging
+
+## 📄 License
+
+This is an internal project. Refer to your organization's license.
+
+## 💬 Support
+
+For issues:
+- **Architecture questions**: See [ARCHITECTURE.md](ARCHITECTURE.md)
+- **Code examples**: See [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+- **Migration**: See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+
+---
+
+**Built with ❤️ using clean architecture principles**
