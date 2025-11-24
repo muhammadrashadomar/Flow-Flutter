@@ -12,6 +12,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // Ensure the following Maven repositories are included, as they are specifically required for resolving Risk SDK dependencies:
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://maven.fpregistry.io/releases") }
     }
@@ -32,4 +33,6 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+
 

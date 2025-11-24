@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("org.jetbrains.kotlin.android")        // Kotlin 2.1.0
+    id("org.jetbrains.kotlin.plugin.compose") // Required for Kotlin 2.x + Compose
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -22,7 +22,7 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3" // ✅ Match your Kotlin version (e.g., 1.9.x)
+        kotlinCompilerExtensionVersion = "1.5.14" // ✅ Match your Kotlin version (e.g., 1.9.x)
     }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -50,7 +50,7 @@ flutter {
 
 
 dependencies {
-    implementation("com.checkout:checkout-android-components:1.0.0-beta-6")
+    implementation("com.checkout:checkout-android-components:${property("checkout_version")}")
      // Lifecycle + ViewModel
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
 
